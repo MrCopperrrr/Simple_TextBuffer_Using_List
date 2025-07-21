@@ -5,7 +5,17 @@
 
 template <typename T>
 class DoublyLinkedList {
-    // TODO: may provide some attributes
+    struct Node {
+        T data;
+        Node *next;
+        Node *prev;
+
+        Node(T data, Node *next = nullptr, Node *prev = nullptr)
+            : data(data), next(next), prev(prev) {}
+    };
+    Node *head;
+    Node *tail;
+    int count;
 
 public:
     DoublyLinkedList();
