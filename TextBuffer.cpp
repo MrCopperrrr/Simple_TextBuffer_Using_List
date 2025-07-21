@@ -3,7 +3,10 @@
 // ----------------- DoublyLinkedList -----------------
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList() {
-    // TODO
+    head = new Node(T(), nullptr, nullptr);
+    tail = new Node(T(), nullptr, head);
+    head->next = tail;
+    count = 0;
 }
 
 template <typename T>
