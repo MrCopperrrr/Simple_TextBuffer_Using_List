@@ -185,6 +185,12 @@ void TextBuffer::deleteChar() {
     while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
+void TextBuffer::moveCursorLeft(){
+    if(cursorPos == 0) 
+        throw cursor_error();
+    cursorPos--;
+}
+
 
 
 
