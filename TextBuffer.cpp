@@ -1,5 +1,7 @@
 #include "TextBuffer.h"
 
+
+
 // ----------------- DoublyLinkedList -----------------
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList() {
@@ -154,6 +156,8 @@ string DoublyLinkedList<T>::toString(string (*convert2str)(T&)) const {
     }
     return tostringofitem.str();
 }
+
+
 
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
@@ -352,7 +356,7 @@ void TextBuffer::redo() {
     if (last.type == MOVE) {
         if (last.data == 'L') moveCursorLeft();
         else if (last.data == 'R') moveCursorRight();
-        else if (last.data == 'J') moveCursorTo(last.pos);  // jump to
+        else if (last.data == 'J') moveCursorTo(last.pos);  
         undoStack.insertAtTail(last);
     }
 }
