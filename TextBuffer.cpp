@@ -5,10 +5,10 @@
 // ----------------- DoublyLinkedList -----------------
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList() {
-    head = new Node(T()); 
-    tail = new Node(T());
+    head = new Node(T());  
+    tail = new Node(T());  
     head->next = tail;
-    tail-> prev = head;
+    tail->prev = head;
     count = 0;
 }
 
