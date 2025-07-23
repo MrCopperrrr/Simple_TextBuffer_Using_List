@@ -249,7 +249,59 @@ int* TextBuffer::findAllOccurrences(char c, int &count) const{
     return occurrences;
 }
 
+void TextBuffer::sortAscending(){
+    //O(nlogn)
+    int buffersize = buffer.size();
+    if( buffersize <= 1) return;
+    char* arr = new char[buffersize];
+    for(int i = 0; i < buffersize; i++){
+        arr[i] = buffer.get(i);
+    }
+    // B2: Merge Sort
+    // Hàm phụ bên dưới
+    auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
+        if (left >= right) return;
 
+        int mid = (left + right) / 2;
+        mergeSortRef(a, left, mid, mergeSortRef);
+        mergeSortRef(a, mid + 1, right, mergeSortRef);
+
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        char* L = new char[n1];
+        char* R = new char[n2];
+
+        for (int i = 0; i < n1; ++i) L[i] = a[left + i];
+        for (int i = 0; i < n2; ++i) R[i] = a[mid + 1 + i];
+
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) a[k++] = L[i++];
+            else a[k++] = R[j++];
+        }
+        while (i < n1) a[k++] = L[i++];
+        while (j < n2) a[k++] = R[j++];
+
+        delete[] L;
+        delete[] R;
+    };
+
+    mergeSort(arr, 0, n - 1, mergeSort);
+
+    for (int i = n - 1; i >= 0; --i) {
+        buffer.deleteAt(i);
+    }
+
+    for (int i = 0; i < n; ++i) {
+        buffer.insertAtTail(arr[i]);
+    }
+
+    delete[] arr;
+    cursorPos = 0;
+
+    
+}
 
 
 // ----------------- HistoryManager -----------------
