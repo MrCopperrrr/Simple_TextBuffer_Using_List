@@ -173,14 +173,12 @@ TextBuffer::TextBuffer() {
 TextBuffer::~TextBuffer() {//nothing
 }
 
-void TextBuffer::insert(char c){
+void TextBuffer::insert(char c) {
     buffer.insertAt(cursorPos, c);
     undoStack.insertAtTail(Action(INSERT, cursorPos, c));
-    history.addAction("Insert", cursorPos, c);
+    history.addAction("insert", cursorPos, c);  
     cursorPos++;
-    while(redoStack.size() >0){
-        redoStack.deleteAt(redoStack.size() - 1);
-    }
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
 void TextBuffer::deleteChar() {
