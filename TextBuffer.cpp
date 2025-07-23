@@ -358,12 +358,10 @@ void TextBuffer::redo() {
 
 
 // ----------------- HistoryManager -----------------
-TextBuffer::HistoryManager::HistoryManager() {
-    // TODO
+TextBuffer::HistoryManager::HistoryManager() {//nothing
 }
 
-TextBuffer::HistoryManager::~HistoryManager() {
-    // TODO
+TextBuffer::HistoryManager::~HistoryManager() {//nothing
 }
 
 
