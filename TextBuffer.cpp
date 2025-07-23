@@ -173,6 +173,18 @@ void TextBuffer::insert(char c){
     }
 }
 
+void TextBuffer::deleteChar() {
+    if (cursorPos == 0) return;
+
+    char deletedChar = buffer.get(cursorPos - 1);
+    buffer.deleteAt(cursorPos - 1);
+
+    undoStack.insertAtTail(Action(DELETE, cursorPos - 1, deletedChar));
+
+    cursorPos--;
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
+}
+
 
 
 
