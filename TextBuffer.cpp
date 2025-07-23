@@ -338,6 +338,24 @@ void TextBuffer::undo() {
     }
 }
 
+void TextBuffer::redo() {
+    if (redoStack.size() == 0) return;
+
+    Action last = redoStack.get(redoStack.size() - 1);
+
+    if (last.type == INSERT || last.type == DELETE) return;
+
+    redoStack.deleteAt(redoStack.size() - 1);
+
+    if (last.type == MOVE) {
+        if (last.data == 'L') moveCursorLeft();
+        else if (last.data == 'R') moveCursorRight();
+        else if (last.data == 'J') moveCursorTo(last.pos);  // jump to
+        undoStack.insertAtTail(last);
+    }
+}
+
+
 
 // ----------------- HistoryManager -----------------
 TextBuffer::HistoryManager::HistoryManager() {
