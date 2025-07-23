@@ -93,6 +93,16 @@ int DoublyLinkedList<T>::indexOf(T item) const {
     return -1;
 }
 
+template<typename T>
+bool DoublyLinkedList<T>::contains(T item) const {
+    return indexOf(item) == -1 ? false : true;
+}
+
+template<typename T>
+int DoublyLinkedList<T>::size() const {
+    return count;
+}
+
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     // TODO
