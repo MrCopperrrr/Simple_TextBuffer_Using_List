@@ -218,7 +218,7 @@ void TextBuffer::moveCursorTo(int index) {
 
 string TextBuffer::getContent() const{
     stringstream content;
-    for(int i = 0; i <= buffer.size(); i++){
+    for(int i = 0; i < buffer.size(); ++i){
         content << buffer.get(i);
     }
     string res = content.str();
