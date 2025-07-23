@@ -3,20 +3,16 @@
 // ----------------- DoublyLinkedList -----------------
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList() {
-    head = new Node(T(), nullptr, nullptr);
-    tail = new Node(T(), nullptr, head);
+    head = new Node(T()); 
+    tail = new Node(T());
     head->next = tail;
+    tail-> prev = head;
     count = 0;
 }
 
 template <typename T>
 DoublyLinkedList<T>::~DoublyLinkedList() {
-    Node* curr = head;
-    while(curr != nullptr){
-        Node *nodeNext = curr->next;
-        delete curr;
-        curr = nodeNext;
-    }
+    
 }
 
 
