@@ -23,16 +23,19 @@ DoublyLinkedList<T>::~DoublyLinkedList() {
 template <typename T>
 void DoublyLinkedList<T>::insertAtHead(T data){
     Node* newNode = new Node (data, head->next, head);
-    if(head == nullptr){
-        head = newNode;
-        return;
-    }
-    head->prev = newNode;
-    newNode->next = head;
-    head = newNode;
+    head->next->prev = newNode;
+    head->next = newNode;
     count++;
 }
 
+template <typename T>
+void DoublyLinkedList<T>::insertAtTail(T data) {
+    Node* newNode = new Node(data, tail, tail->prev);
+    tail->prev->next = newNode;
+    tail->prev = newNode;
+    count++;
+
+}
 
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
