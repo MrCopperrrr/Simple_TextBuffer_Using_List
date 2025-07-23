@@ -79,6 +79,20 @@ T& DoublyLinkedList<T>::get(int index) const {
     return curr->data;
 }
 
+template <typename T>
+int DoublyLinkedList<T>::indexOf(T item) const {
+    Node *current = head->next;
+    int index = 0;
+    while (current != tail) {
+        if (current->data == item) { 
+        return index;
+        }
+        current = current->next;
+        index++;
+    }
+    return -1;
+}
+
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     // TODO
