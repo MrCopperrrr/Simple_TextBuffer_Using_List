@@ -225,6 +225,30 @@ int TextBuffer::findFirstOccurrence(char c) const {
     return -1;
 }
 
+int* TextBuffer::findAllOccurrences(char c, int &count) const{
+    count = 0;
+    int buffersize = buffer.size();
+
+    for (int i = 0; i < buffersize; i++) {
+        if (buffer.get(i) == c) {
+            count++;
+        }
+    }
+
+   if(count == 0) return nullptr;
+   
+    int* occurrences = new int[count];
+    int index = 0;
+
+    for (int i = 0; i < buffersize; i++) {
+        if (buffer.get(i) == c) {
+            occurrences[index++] = i;
+        }
+    }
+
+    return occurrences;
+}
+
 
 
 
