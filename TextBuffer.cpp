@@ -34,7 +34,22 @@ void DoublyLinkedList<T>::insertAtTail(T data) {
     tail->prev->next = newNode;
     tail->prev = newNode;
     count++;
+}
 
+template <typename T>
+void DoublyLinkedList<T>::insertAt(int index, T data) {
+    Node* previous = head;
+    Node* next = previous->next;
+    Node* newNode = new Node(data, next, previous);
+    if (index < 0 || index > count) {
+        throw out_of_range("Index is invalid!");
+    }
+    for(int idx = 0; idx < index; idx++) {
+        previous = previous->next;
+    }
+    previous->next = newNode;
+    next->prev = newNode;
+    count++;
 }
 
 // ----------------- TextBuffer -----------------
