@@ -369,6 +369,20 @@ void TextBuffer::HistoryManager::addAction(const string &actionName, int cursorP
     history.insertAtTail(record);
 }
 
+void TextBuffer::HistoryManager::printHistory() const {
+    std::cout << "[";
+    for (int i = 0; i < history.size(); ++i) {
+        const ActionRecord& act = history.get(i);
+        std::cout << "(" << act.action << ", " << act.cursorPos << ", ";
+        if (act.ch == '\0') std::cout << "\\0";
+        else std::cout << act.ch;
+        std::cout << ")";
+        if (i < history.size() - 1) std::cout << ", ";
+    }
+    std::cout << "]\n";
+}
+
+
 
 
 // Explicit template instantiation for char, string, int, double, float, and Point
