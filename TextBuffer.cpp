@@ -382,7 +382,9 @@ void TextBuffer::HistoryManager::printHistory() const {
     std::cout << "]\n";
 }
 
-
+int TextBuffer::HistoryManager::size() const {
+    return history.size();
+}
 
 
 // Explicit template instantiation for char, string, int, double, float, and Point
