@@ -299,8 +299,18 @@ void TextBuffer::sortAscending(){
 
     delete[] arr;
     cursorPos = 0;
+}
 
-    
+void TextBuffer::deleteAllOccurrences(char c) {
+    int i = 0;
+    while (i < buffer.size()) {
+        if (buffer.get(i) == c) {
+            buffer.deleteAt(i);
+            if (i < cursorPos) cursorPos--; // Điều chỉnh con trỏ
+        } else {
+            ++i;
+        }
+    }
 }
 
 
