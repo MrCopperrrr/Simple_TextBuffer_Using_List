@@ -103,6 +103,22 @@ int DoublyLinkedList<T>::size() const {
     return count;
 }
 
+template<typename T>
+void DoublyLinkedList<T>::reverse() {
+    Node* current = head->next;
+    Node* temp = nullptr;
+
+    while (current != tail) {
+        temp = current->next;
+        std::swap(current->next, current->prev); //hoán đổi con trỏ next và prev để lật ngược 
+        current = temp;
+    }
+
+    std::swap(head->next, tail->prev); //đổi head với tail lại cho đúng
+    head->next->prev = head;
+    tail->prev->next = tail;
+
+}
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     // TODO
