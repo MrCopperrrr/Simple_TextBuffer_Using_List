@@ -364,6 +364,11 @@ TextBuffer::HistoryManager::HistoryManager() {//nothing
 TextBuffer::HistoryManager::~HistoryManager() {//nothing
 }
 
+void TextBuffer::HistoryManager::addAction(const string &actionName, int cursorPos, char c) {
+    ActionRecord record(actionName, cursorPos, c);
+    history.insertAtTail(record);
+}
+
 
 
 // Explicit template instantiation for char, string, int, double, float, and Point
