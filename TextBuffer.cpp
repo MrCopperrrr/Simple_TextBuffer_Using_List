@@ -197,6 +197,12 @@ void TextBuffer::moveCursorRight(){
     cursorPos++;
 }
 
+void TextBuffer::moveCursorTo(int index){
+    if(index < 0 || index > buffer.size()) 
+        throw cursor_error("Index is invalid!");
+    cursorPos = index;
+}
+
 
 
 
