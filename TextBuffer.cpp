@@ -212,6 +212,9 @@ string TextBuffer::getContent() const{
     return res;
 }
 
+int TextBuffer::getCursorPos() const{
+    return cursorPos;
+}
 
 
 // ----------------- HistoryManager -----------------
