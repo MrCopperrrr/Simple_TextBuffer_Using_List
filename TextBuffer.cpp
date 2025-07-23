@@ -154,14 +154,15 @@ string DoublyLinkedList<T>::toString(string (*convert2str)(T&)) const {
     }
     return tostringofitem.str();
 }
+
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
-    // TODO
+    this->cursorPos = 0;
 }
 
-TextBuffer::~TextBuffer() {
-    // TODO
+TextBuffer::~TextBuffer() {//nothing
 }
+
 
 
 

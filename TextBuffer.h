@@ -36,7 +36,6 @@ public:
     bool contains(T item) const;
     int size() const;
     void reverse();
-    bool empty() const;
     string toString(string (*convert2str)(T&) = 0) const;
 };
 
@@ -103,7 +102,6 @@ public:
     void deleteAllOccurrences(char c);
     void undo();
     void redo();
-
 
 };
 
