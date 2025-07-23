@@ -20,6 +20,18 @@ DoublyLinkedList<T>::~DoublyLinkedList() {
     }
 }
 
+template <typename T>
+void DoublyLinkedList<T>::insertAtHead(T data){
+    Node* newNode = new Node (data, head->next, head);
+    if(head == nullptr){
+        head = newNode;
+        return;
+    }
+    head->prev = newNode;
+    newNode->next = head;
+    head = newNode;
+    count++;
+}
 
 
 // ----------------- TextBuffer -----------------
