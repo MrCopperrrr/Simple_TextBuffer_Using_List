@@ -163,7 +163,7 @@ TextBuffer::TextBuffer() {
 TextBuffer::~TextBuffer() {//nothing
 }
 
-void TextBuffer:: insert(char c){
+void TextBuffer::insert(char c){
     buffer.insertAt(cursorPos, c);
     undoStack.insertAtTail(Action(INSERT, cursorPos, c));
     history.addAction("Insert", cursorPos, c);
