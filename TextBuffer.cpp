@@ -320,6 +320,24 @@ void TextBuffer::deleteAllOccurrences(char c) {
     while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
+void TextBuffer::undo() {
+    if (undoStack.size() == 0) return;
+
+    Action last = undoStack.get(undoStack.size() - 1); // lấy action cuối
+    undoStack.deleteAt(undoStack.size() - 1); // pop ra
+
+    if (last.type == INSERT) { 
+        buffer.deleteAt(last.pos); 
+        cursorPos = last.pos;
+        redoStack.insertAtTail(last); // redo sẽ re-insert
+    }
+    else if (last.type == DELETE) { 
+        buffer.insertAt(last.pos, last.data);
+        cursorPos = last.pos + 1;
+        redoStack.insertAtTail(last); // redo sẽ re-delete
+    }
+}
+
 
 // ----------------- HistoryManager -----------------
 TextBuffer::HistoryManager::HistoryManager() {
