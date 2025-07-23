@@ -191,6 +191,11 @@ void TextBuffer::moveCursorLeft(){
     cursorPos--;
 }
 
+void TextBuffer::moveCursorRight(){
+    if(cursorPos >= buffer.size()) 
+        throw cursor_error();
+    cursorPos++;
+}
 
 
 
