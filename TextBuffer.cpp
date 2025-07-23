@@ -250,15 +250,12 @@ int* TextBuffer::findAllOccurrences(char c, int &count) const{
 }
 
 void TextBuffer::sortAscending(){
-    //O(nlogn)
     int buffersize = buffer.size();
     if( buffersize <= 1) return;
     char* arr = new char[buffersize];
     for(int i = 0; i < buffersize; i++){
         arr[i] = buffer.get(i);
     }
-    // B2: Merge Sort
-    // Hàm phụ bên dưới
     auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
         if (left >= right) return;
 
@@ -302,15 +299,25 @@ void TextBuffer::sortAscending(){
 }
 
 void TextBuffer::deleteAllOccurrences(char c) {
+    int originalSize = buffer.size();
+    int deletedCount = 0;
     int i = 0;
+
     while (i < buffer.size()) {
         if (buffer.get(i) == c) {
             buffer.deleteAt(i);
-            if (i < cursorPos) cursorPos--; // Điều chỉnh con trỏ
+            if (i < cursorPos) cursorPos--;
+            deletedCount++;
         } else {
             ++i;
         }
     }
+
+    // update con trỏ sau xóa
+    if (deletedCount > 0) cursorPos = 0;
+
+    // clear buffer 
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
 
