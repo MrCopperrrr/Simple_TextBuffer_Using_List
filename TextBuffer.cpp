@@ -52,6 +52,21 @@ void DoublyLinkedList<T>::insertAt(int index, T data) {
     count++;
 }
 
+template <typename T>
+void DoublyLinkedList<T>::deleteAt(int index) {
+    if (index < 0 || index >= count) {
+        throw std::out_of_range("Index is invalid!");
+    }
+    Node* curr = head->next;
+    for (int i = 0; i < index; ++i) {
+        curr = curr->next;
+    }
+    curr->prev->next = curr->next;
+    curr->next->prev = curr->prev;
+    delete curr;
+    count--;
+}
+
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     // TODO
