@@ -216,6 +216,17 @@ int TextBuffer::getCursorPos() const{
     return cursorPos;
 }
 
+int TextBuffer::findFirstOccurrence(char c) const {
+    for (int i = 0; i < buffer.size(); i++) {
+        if (buffer.get(i) == c) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
 
 // ----------------- HistoryManager -----------------
 TextBuffer::HistoryManager::HistoryManager() {
