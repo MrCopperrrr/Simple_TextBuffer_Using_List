@@ -26,8 +26,8 @@ DoublyLinkedList<T>::~DoublyLinkedList() {
 }
 
 template <typename T>
-void DoublyLinkedList<T>::insertAtHead(T data){
-    Node* newNode = new Node (data, head->next, head);
+void DoublyLinkedList<T>::insertAtHead(T data) {
+    Node* newNode = new Node(data, head->next, head);
     head->next->prev = newNode;
     head->next = newNode;
     count++;
@@ -43,18 +43,21 @@ void DoublyLinkedList<T>::insertAtTail(T data) {
 
 template <typename T>
 void DoublyLinkedList<T>::insertAt(int index, T data) {
-    Node* previous = head;
-    Node* next = previous->next;
-    Node* newNode = new Node(data, next, previous);
-    if (index < 0 || index > count) {
+    if (index < 0 || index > count)
         throw out_of_range("Index is invalid!");
-    }
-    for(int idx = 0; idx < index; idx++) {
-        previous = previous->next;
-    }
-    previous->next = newNode;
+
+    Node* prev = head;
+    for (int i = 0; i < index; ++i)
+        prev = prev->next;
+
+    Node* next = prev->next;
+    Node* newNode = new Node(data, next, prev);
+
+    prev->next = newNode;
     next->prev = newNode;
+
     count++;
+
 }
 
 template <typename T>
