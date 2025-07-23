@@ -184,32 +184,37 @@ void TextBuffer::insert(char c){
 }
 
 void TextBuffer::deleteChar() {
-    if (cursorPos == 0) return;
-
-    char deletedChar = buffer.get(cursorPos - 1);
+    if (cursorPos == 0 || cursorPos > buffer.size()) return;
+    
+    char deleted = buffer.get(cursorPos - 1);
     buffer.deleteAt(cursorPos - 1);
-
-    undoStack.insertAtTail(Action(DELETE, cursorPos - 1, deletedChar));
-
     cursorPos--;
-    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
+
+    undoStack.insertAtTail(Action(DELETE, cursorPos, deleted));
+    history.addAction("delete", cursorPos, deleted);
+
+    while (redoStack.size() > 0)
+        redoStack.deleteAt(redoStack.size() - 1);
 }
 
-void TextBuffer::moveCursorLeft(){
-    if(cursorPos == 0) 
-        throw cursor_error();
+void TextBuffer::moveCursorLeft() {
+    if (cursorPos == 0) {
+        throw cursor_error(); // cursor đang ở đầu
+    }
     cursorPos--;
 }
 
-void TextBuffer::moveCursorRight(){
-    if(cursorPos >= buffer.size()) 
-        throw cursor_error();
+void TextBuffer::moveCursorRight() {
+    if (cursorPos == buffer.size()) {
+        throw cursor_error(); // cursor đang ở cuối
+    }
     cursorPos++;
 }
 
-void TextBuffer::moveCursorTo(int index){
-    if(index < 0 || index > buffer.size()) 
-        throw cursor_error("Index is invalid!");
+void TextBuffer::moveCursorTo(int index) {
+    if (index < 0 || index > buffer.size()) {
+        throw std::out_of_range("Index is invalid!");
+    }
     cursorPos = index;
 }
 
