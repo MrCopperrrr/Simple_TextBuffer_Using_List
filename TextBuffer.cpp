@@ -232,36 +232,29 @@ int TextBuffer::getCursorPos() const{
 }
 
 int TextBuffer::findFirstOccurrence(char c) const {
-    for (int i = 0; i < buffer.size(); i++) {
-        if (buffer.get(i) == c) {
-            return i;
-        }
+    for (int i = 0; i < buffer.size(); ++i) {
+        if (buffer.get(i) == c) return i;
     }
     return -1;
 }
 
-int* TextBuffer::findAllOccurrences(char c, int &count) const{
+int* TextBuffer::findAllOccurrences(char c, int &count) const {
     count = 0;
-    int buffersize = buffer.size();
+    int n = buffer.size();
 
-    for (int i = 0; i < buffersize; i++) {
-        if (buffer.get(i) == c) {
-            count++;
-        }
+    for (int i = 0; i < n; ++i) {
+        if (buffer.get(i) == c) count++;
     }
 
-   if(count == 0) return nullptr;
-   
-    int* occurrences = new int[count];
-    int index = 0;
+    if (count == 0) return nullptr;
 
-    for (int i = 0; i < buffersize; i++) {
-        if (buffer.get(i) == c) {
-            occurrences[index++] = i;
-        }
+    int* result = new int[count];
+    int idx = 0;
+    for (int i = 0; i < n; ++i) {
+        if (buffer.get(i) == c) result[idx++] = i;
     }
 
-    return occurrences;
+    return result;
 }
 
 void TextBuffer::sortAscending() {
