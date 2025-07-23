@@ -249,13 +249,15 @@ int* TextBuffer::findAllOccurrences(char c, int &count) const{
     return occurrences;
 }
 
-void TextBuffer::sortAscending(){
-    int buffersize = buffer.size();
-    if( buffersize <= 1) return;
-    char* arr = new char[buffersize];
-    for(int i = 0; i < buffersize; i++){
+void TextBuffer::sortAscending() {
+    int n = buffer.size();
+    if (n <= 1) return;
+
+    char* arr = new char[n];
+    for (int i = 0; i < n; ++i) {
         arr[i] = buffer.get(i);
     }
+
     auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
         if (left >= right) return;
 
