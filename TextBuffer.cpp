@@ -119,6 +119,41 @@ void DoublyLinkedList<T>::reverse() {
     tail->prev->next = tail;
 
 }
+
+template<typename T>
+string DoublyLinkedList<T>::toString(string (*convert2str)(T&)) const {
+    if (count == 0) {
+        return "[]";
+    }
+    stringstream tostringofitem; 
+    stringstream tostring;
+    if (convert2str != nullptr) {
+        tostringofitem << "[";
+        Node *current = head->next;
+        while (current != tail) {
+            tostringofitem << convert2str(current->data);
+            if (current->next != tail) {
+                tostringofitem << ", ";
+            }
+            current = current->next;
+        }
+        tostringofitem << "]";
+    } 
+    else {
+        Node *current = head->next;
+        tostringofitem << "[";
+        while (current != tail) {
+            tostring << current->data;
+            if (current->next != tail) {
+                tostring << ", ";
+            }
+            current = current->next;
+        }
+        tostringofitem << tostring.str();
+        tostringofitem << "]";
+    }
+    return tostringofitem.str();
+}
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     // TODO
