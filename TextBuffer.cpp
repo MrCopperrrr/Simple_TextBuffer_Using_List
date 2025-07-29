@@ -113,19 +113,15 @@ int DoublyLinkedList<T>::size() const {
 
 template<typename T>
 void DoublyLinkedList<T>::reverse() {
-    Node* current = head->next;
-    Node* temp = nullptr;
+    if (head == nullptr || tail == nullptr) return; // safety
 
-    while (current != tail) {
-        temp = current->next;
-        std::swap(current->next, current->prev); //hoán đổi con trỏ next và prev để lật ngược 
-        current = temp;
+    Node* current = head;
+    while (current != nullptr) {
+        std::swap(current->next, current->prev);
+        current = current->prev; // next/prev đã hoán đổi
     }
 
-    std::swap(head->next, tail->prev); //đổi head với tail lại cho đúng
-    head->next->prev = head;
-    tail->prev->next = tail;
-
+    std::swap(head, tail);
 }
 
 template<typename T>
@@ -163,20 +159,34 @@ string DoublyLinkedList<T>::toString(string (*convert2str)(T&)) const {
     return tostringofitem.str();
 }
 
+template<typename T>
+string DoublyLinkedList<T>::concatRaw() const {
+    std::stringstream ss;
+    Node* curr = head->next;
+    while (curr != tail) {
+        ss << curr->data;
+        curr = curr->next;
+    }
+    return ss.str();
+}
+
+
 
 
 // ----------------- TextBuffer -----------------
 TextBuffer::TextBuffer() {
     this->cursorPos = 0;
+    this->historyManager = new HistoryManager(); // khởi tạo HistoryManager
 }
 
-TextBuffer::~TextBuffer() {//nothing
+TextBuffer::~TextBuffer() {
+    delete historyManager; // giải phóng bộ nhớ
 }
 
 void TextBuffer::insert(char c) {
     buffer.insertAt(cursorPos, c);
     undoStack.insertAtTail(Action(INSERT, cursorPos, c));
-    history.addAction("insert", cursorPos, c);  
+    historyManager->addAction("insert", cursorPos, c);
     cursorPos++;
     while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
@@ -189,7 +199,7 @@ void TextBuffer::deleteChar() {
     cursorPos--;
 
     undoStack.insertAtTail(Action(DELETE, cursorPos, deleted));
-    history.addAction("delete", cursorPos, deleted);
+    historyManager->addAction("delete", cursorPos, deleted);
 
     while (redoStack.size() > 0)
         redoStack.deleteAt(redoStack.size() - 1);
@@ -197,43 +207,45 @@ void TextBuffer::deleteChar() {
 
 void TextBuffer::moveCursorLeft() {
     if (cursorPos == 0) {
-        throw cursor_error(); // cursor đang ở đầu
+        throw cursor_error();
     }
+    int prev = cursorPos;
     cursorPos--;
+    undoStack.insertAtTail(Action(MOVE, prev, 'L'));  // lưu vị trí trước khi move
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
 void TextBuffer::moveCursorRight() {
     if (cursorPos == buffer.size()) {
-        throw cursor_error(); // cursor đang ở cuối
+        throw cursor_error();
     }
+    int prev = cursorPos;
     cursorPos++;
+    undoStack.insertAtTail(Action(MOVE, prev, 'R'));  // lưu vị trí trước khi move
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
 void TextBuffer::moveCursorTo(int index) {
     if (index < 0 || index > buffer.size()) {
         throw std::out_of_range("Index is invalid!");
     }
+    int previous = cursorPos;
     cursorPos = index;
+    undoStack.insertAtTail(Action(MOVE, previous, 'J')); 
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
 
-string TextBuffer::getContent() const{
-    stringstream content;
-    for(int i = 0; i < buffer.size(); ++i){
-        content << buffer.get(i);
-    }
-    string res = content.str();
-    return res;
+string TextBuffer::getContent() const {
+    return buffer.concatRaw();
 }
+
 
 int TextBuffer::getCursorPos() const{
     return cursorPos;
 }
 
 int TextBuffer::findFirstOccurrence(char c) const {
-    for (int i = 0; i < buffer.size(); ++i) {
-        if (buffer.get(i) == c) return i;
-    }
-    return -1;
+    return buffer.indexOf(c); // O(n)
 }
 
 int* TextBuffer::findAllOccurrences(char c, int &count) const {
@@ -255,36 +267,99 @@ int* TextBuffer::findAllOccurrences(char c, int &count) const {
     return result;
 }
 
+// void TextBuffer::sortAscending() {
+//     int n = buffer.size();
+//     if (n <= 1) return;
+
+//     char* arr = new char[n];
+//     for (int i = 0; i < n; ++i) {
+//         arr[i] = buffer.get(i);
+//     }
+
+//     auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
+//         if (left >= right) return;
+
+//         int mid = (left + right) / 2;
+//         mergeSortRef(a, left, mid, mergeSortRef);
+//         mergeSortRef(a, mid + 1, right, mergeSortRef);
+
+//         int n1 = mid - left + 1;
+//         int n2 = right - mid;
+
+//         char* L = new char[n1];
+//         char* R = new char[n2];
+
+//         for (int i = 0; i < n1; ++i) L[i] = a[left + i];
+//         for (int i = 0; i < n2; ++i) R[i] = a[mid + 1 + i];
+
+//         int i = 0, j = 0, k = left;
+//         while (i < n1 && j < n2) {
+//             if (L[i] <= R[j]) a[k++] = L[i++];
+//             else a[k++] = R[j++];
+//         }
+//         while (i < n1) a[k++] = L[i++];
+//         while (j < n2) a[k++] = R[j++];
+
+//         delete[] L;
+//         delete[] R;
+//     };
+
+//     mergeSort(arr, 0, n - 1, mergeSort);
+
+//     for (int i = n - 1; i >= 0; --i) {
+//         buffer.deleteAt(i);
+//     }
+
+//     for (int i = 0; i < n; ++i) {
+//         buffer.insertAtTail(arr[i]);
+//     }
+
+//     delete[] arr;
+//     cursorPos = 0;
+// }
+
+bool TextBuffer::charCompare(char a, char b) {
+    if (isalpha(a) && isalpha(b)) {
+        if (tolower(a) == tolower(b)) return isupper(a); // 'A' < 'a'
+        return tolower(a) < tolower(b);
+    }
+    return a < b;
+}
+
 void TextBuffer::sortAscending() {
     int n = buffer.size();
     if (n <= 1) return;
 
+    // Lưu lại buffer trước khi sort
+    string beforeSort = getContent();
+    int oldCursor = cursorPos;
+
+    // Tạo mảng để sort
     char* arr = new char[n];
-    for (int i = 0; i < n; ++i) {
-        arr[i] = buffer.get(i);
-    }
+    for (int i = 0; i < n; ++i) arr[i] = buffer.get(i);
 
-    auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
+    // auto charCompare = [](char a, char b) -> bool {
+    //     if (isalpha(a) && isalpha(b)) {
+    //         if (tolower(a) == tolower(b)) return isupper(a);
+    //         return tolower(a) < tolower(b);
+    //     }
+    //     return a < b;
+    // };
+
+    auto mergeSort = [&](char* a, int left, int right, auto& mergeSortRef) -> void {
         if (left >= right) return;
-
         int mid = (left + right) / 2;
         mergeSortRef(a, left, mid, mergeSortRef);
         mergeSortRef(a, mid + 1, right, mergeSortRef);
 
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
-
-        char* L = new char[n1];
-        char* R = new char[n2];
-
+        int n1 = mid - left + 1, n2 = right - mid;
+        char* L = new char[n1], *R = new char[n2];
         for (int i = 0; i < n1; ++i) L[i] = a[left + i];
         for (int i = 0; i < n2; ++i) R[i] = a[mid + 1 + i];
 
         int i = 0, j = 0, k = left;
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) a[k++] = L[i++];
-            else a[k++] = R[j++];
-        }
+        while (i < n1 && j < n2)
+            a[k++] = charCompare(L[i], R[j]) ? L[i++] : R[j++];
         while (i < n1) a[k++] = L[i++];
         while (j < n2) a[k++] = R[j++];
 
@@ -294,17 +369,18 @@ void TextBuffer::sortAscending() {
 
     mergeSort(arr, 0, n - 1, mergeSort);
 
-    for (int i = n - 1; i >= 0; --i) {
-        buffer.deleteAt(i);
-    }
-
-    for (int i = 0; i < n; ++i) {
-        buffer.insertAtTail(arr[i]);
-    }
+    for (int i = n - 1; i >= 0; --i) buffer.deleteAt(i);
+    for (int i = 0; i < n; ++i) buffer.insertAtTail(arr[i]);
 
     delete[] arr;
     cursorPos = 0;
+
+    // Ghi vào undoStack và history
+    undoStack.insertAtTail(Action(SORT, oldCursor, '\0', beforeSort));
+    historyManager->addAction("sort", oldCursor, '\0');
+    while (redoStack.size() > 0) redoStack.deleteAt(redoStack.size() - 1);
 }
+
 
 void TextBuffer::deleteAllOccurrences(char c) {
     int originalSize = buffer.size();
@@ -331,35 +407,122 @@ void TextBuffer::deleteAllOccurrences(char c) {
 void TextBuffer::undo() {
     if (undoStack.size() == 0) return;
 
-    Action last = undoStack.get(undoStack.size() - 1); // lấy action cuối
-    undoStack.deleteAt(undoStack.size() - 1); // pop ra
+    Action last = undoStack.get(undoStack.size() - 1);
+    undoStack.deleteAt(undoStack.size() - 1);
 
-    if (last.type == INSERT) { 
-        buffer.deleteAt(last.pos); 
+    
+    if (last.type == INSERT) {
+        buffer.deleteAt(last.pos);
         cursorPos = last.pos;
-        redoStack.insertAtTail(last); // redo sẽ re-insert
+        redoStack.insertAtTail(last);
     }
-    else if (last.type == DELETE) { 
+
+    else if (last.type == DELETE) {
         buffer.insertAt(last.pos, last.data);
         cursorPos = last.pos + 1;
-        redoStack.insertAtTail(last); // redo sẽ re-delete
+        redoStack.insertAtTail(last);
     }
+
+    else if (last.type == MOVE) {
+        if (last.data == 'L') {
+            // undo của 'L': tăng cursor
+            redoStack.insertAtTail(last); // lưu lại hành động cũ cho redo
+            cursorPos = last.pos;
+        }
+
+        else if (last.data == 'R') {
+            // undo của 'R': giảm cursor
+            redoStack.insertAtTail(last);
+            cursorPos = last.pos;
+        }
+
+        else if (last.data == 'J') {
+            int current = cursorPos;
+            cursorPos = last.pos;
+            redoStack.insertAtTail(Action(MOVE, current, 'J'));
+        }
+    }
+
+    else if (last.type == SORT) {
+        // Phục hồi lại buffer
+        for (int i = buffer.size() - 1; i >= 0; --i) buffer.deleteAt(i);
+        for (char c : last.snapshot) buffer.insertAtTail(c);
+        cursorPos = last.pos;
+
+        redoStack.insertAtTail(last); // cho phép redo lại sort
+    }
+
 }
+
+
+// void TextBuffer::redo() {
+//     if (redoStack.size() == 0) return;
+
+//     Action last = redoStack.get(redoStack.size() - 1);
+//     redoStack.deleteAt(redoStack.size() - 1);
+
+//     if (last.type == INSERT) {
+//         buffer.insertAt(last.pos, last.data);
+//         cursorPos = last.pos + 1;
+//         undoStack.insertAtTail(last);
+//     }
+//     else if (last.type == DELETE) {
+//         buffer.deleteAt(last.pos);
+//         cursorPos = last.pos;
+//         undoStack.insertAtTail(last);
+//     }
+//     else if (last.type == MOVE) {
+//         if (last.data == 'L') moveCursorLeft();
+//         else if (last.data == 'R') moveCursorRight();
+//         else if (last.data == 'J') moveCursorTo(last.pos);
+//         undoStack.insertAtTail(last);
+//     }
+//     else if (last.type == SORT) {
+//         sortAscending(); // sort lại
+//     }
+
+// }
 
 void TextBuffer::redo() {
     if (redoStack.size() == 0) return;
-    Action last = redoStack.get(redoStack.size() - 1);
 
-    if (last.type == INSERT || last.type == DELETE) return;
+    Action last = redoStack.get(redoStack.size() - 1);
     redoStack.deleteAt(redoStack.size() - 1);
 
-    if (last.type == MOVE) {
-        if (last.data == 'L') moveCursorLeft();
-        else if (last.data == 'R') moveCursorRight();
-        else if (last.data == 'J') moveCursorTo(last.pos); //jump 
+
+    if (last.type == INSERT) {
+        buffer.insertAt(last.pos, last.data);
+        cursorPos = last.pos + 1;
         undoStack.insertAtTail(last);
     }
+
+    else if (last.type == DELETE) {
+        buffer.deleteAt(last.pos);
+        cursorPos = last.pos;
+        undoStack.insertAtTail(last);
+    }
+
+    else if (last.type == MOVE) {
+        if (last.data == 'L' || last.data == 'R') {
+            cursorPos = (last.data == 'L') ? last.pos - 1 : last.pos + 1;
+            undoStack.insertAtTail(last);
+        }
+        else if (last.data == 'J') {
+            int prev = cursorPos;
+            cursorPos = last.pos;
+            undoStack.insertAtTail(Action(MOVE, prev, 'J'));
+        }
+    }
+
+    else if (last.type == SORT) {
+        sortAscending();
+        // Ghi đè vào undoStack để giữ đúng snapshot ban đầu
+        undoStack.deleteAt(undoStack.size() - 1);  
+        undoStack.insertAtTail(last);             
+    }
+
 }
+
 
 
 
@@ -391,6 +554,7 @@ void TextBuffer::HistoryManager::printHistory() const {
 int TextBuffer::HistoryManager::size() const {
     return history.size();
 }
+
 
 
 // Explicit template instantiation for char, string, int, double, float, and Point

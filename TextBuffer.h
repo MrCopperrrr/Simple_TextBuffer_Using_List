@@ -5,8 +5,6 @@
 
 //forward declare
 class TextBuffer;
-class HistoryManager;
-
 
 template <typename T>
 class DoublyLinkedList {
@@ -37,6 +35,8 @@ public:
     int size() const;
     void reverse();
     string toString(string (*convert2str)(T&) = 0) const;
+    string concatRaw() const; 
+
 };
 
 class TextBuffer {
@@ -51,7 +51,7 @@ public:
             ActionRecord(string action, int cursorPos, char ch)
                 : action(action), cursorPos(cursorPos), ch(ch) {}
 
-            ActionRecord() : action(""), cursorPos(0), ch('\0') {} // default
+            ActionRecord() : action(""), cursorPos(0), ch('\0') {}
         };
 
         DoublyLinkedList<ActionRecord> history;
@@ -68,22 +68,25 @@ public:
     DoublyLinkedList<char> buffer;
     int cursorPos;
 
-    enum ActionType { INSERT, DELETE, MOVE };
+    enum ActionType { INSERT, DELETE, MOVE, SORT };
     struct Action {
         ActionType type;
         int pos;
         char data;
+        string snapshot; // dùng để undo lại nội dung buffer
 
-        Action(ActionType type, int pos, char data = '\0')
-            : type(type), pos(pos), data(data) {}
+        Action(ActionType type, int pos, char data = '\0', string snapshot = "")
+            : type(type), pos(pos), data(data), snapshot(snapshot) {}
 
-        Action() : type(INSERT), pos(0), data('\0') {} //default
+        Action() : type(INSERT), pos(0), data('\0'), snapshot("") {}
     };
+
 
     DoublyLinkedList<Action> undoStack;
     DoublyLinkedList<Action> redoStack;
 
-    HistoryManager history; 
+private:
+    HistoryManager* historyManager; // new
 
 public:
     TextBuffer();
@@ -102,7 +105,10 @@ public:
     void deleteAllOccurrences(char c);
     void undo();
     void redo();
-
+    void printHistory() const {
+        historyManager->printHistory();
+    }
+    static bool charCompare(char a, char b);
 };
 
 #endif // __TEXT_BUFFER_H__
