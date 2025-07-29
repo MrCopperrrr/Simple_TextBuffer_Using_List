@@ -267,57 +267,6 @@ int* TextBuffer::findAllOccurrences(char c, int &count) const {
     return result;
 }
 
-// void TextBuffer::sortAscending() {
-//     int n = buffer.size();
-//     if (n <= 1) return;
-
-//     char* arr = new char[n];
-//     for (int i = 0; i < n; ++i) {
-//         arr[i] = buffer.get(i);
-//     }
-
-//     auto mergeSort = [](char* a, int left, int right, auto& mergeSortRef) -> void {
-//         if (left >= right) return;
-
-//         int mid = (left + right) / 2;
-//         mergeSortRef(a, left, mid, mergeSortRef);
-//         mergeSortRef(a, mid + 1, right, mergeSortRef);
-
-//         int n1 = mid - left + 1;
-//         int n2 = right - mid;
-
-//         char* L = new char[n1];
-//         char* R = new char[n2];
-
-//         for (int i = 0; i < n1; ++i) L[i] = a[left + i];
-//         for (int i = 0; i < n2; ++i) R[i] = a[mid + 1 + i];
-
-//         int i = 0, j = 0, k = left;
-//         while (i < n1 && j < n2) {
-//             if (L[i] <= R[j]) a[k++] = L[i++];
-//             else a[k++] = R[j++];
-//         }
-//         while (i < n1) a[k++] = L[i++];
-//         while (j < n2) a[k++] = R[j++];
-
-//         delete[] L;
-//         delete[] R;
-//     };
-
-//     mergeSort(arr, 0, n - 1, mergeSort);
-
-//     for (int i = n - 1; i >= 0; --i) {
-//         buffer.deleteAt(i);
-//     }
-
-//     for (int i = 0; i < n; ++i) {
-//         buffer.insertAtTail(arr[i]);
-//     }
-
-//     delete[] arr;
-//     cursorPos = 0;
-// }
-
 bool TextBuffer::charCompare(char a, char b) {
     if (isalpha(a) && isalpha(b)) {
         if (tolower(a) == tolower(b)) return isupper(a); // 'A' < 'a'
@@ -338,13 +287,6 @@ void TextBuffer::sortAscending() {
     char* arr = new char[n];
     for (int i = 0; i < n; ++i) arr[i] = buffer.get(i);
 
-    // auto charCompare = [](char a, char b) -> bool {
-    //     if (isalpha(a) && isalpha(b)) {
-    //         if (tolower(a) == tolower(b)) return isupper(a);
-    //         return tolower(a) < tolower(b);
-    //     }
-    //     return a < b;
-    // };
 
     auto mergeSort = [&](char* a, int left, int right, auto& mergeSortRef) -> void {
         if (left >= right) return;
@@ -453,35 +395,6 @@ void TextBuffer::undo() {
     }
 
 }
-
-
-// void TextBuffer::redo() {
-//     if (redoStack.size() == 0) return;
-
-//     Action last = redoStack.get(redoStack.size() - 1);
-//     redoStack.deleteAt(redoStack.size() - 1);
-
-//     if (last.type == INSERT) {
-//         buffer.insertAt(last.pos, last.data);
-//         cursorPos = last.pos + 1;
-//         undoStack.insertAtTail(last);
-//     }
-//     else if (last.type == DELETE) {
-//         buffer.deleteAt(last.pos);
-//         cursorPos = last.pos;
-//         undoStack.insertAtTail(last);
-//     }
-//     else if (last.type == MOVE) {
-//         if (last.data == 'L') moveCursorLeft();
-//         else if (last.data == 'R') moveCursorRight();
-//         else if (last.data == 'J') moveCursorTo(last.pos);
-//         undoStack.insertAtTail(last);
-//     }
-//     else if (last.type == SORT) {
-//         sortAscending(); // sort lại
-//     }
-
-// }
 
 void TextBuffer::redo() {
     if (redoStack.size() == 0) return;
